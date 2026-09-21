@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Backend
+backend/target/
+backend/.idea/
+backend/*.iml
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/uploads/profile/*
+!backend/uploads/profile/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.log

@@ -1,0 +1,125 @@
+Igniter/
+│
+├── pom.xml
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── thread/
+│   │   │           └── Igniter/
+│   │   │
+│   │   │               ├── IgniterApplication.java
+│   │   │
+│   │   │               ├── user/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── UserController.java
+│   │   │               │   │
+│   │   │               │   ├── dto/
+│   │   │               │   │   ├── UserRequestDTO.java
+│   │   │               │   │   └── UserResponseDTO.java
+│   │   │               │   │
+│   │   │               │   ├── entity/
+│   │   │               │   │   └── User.java
+│   │   │               │   │
+│   │   │               │   ├── repository/
+│   │   │               │   │   └── UserRepository.java
+│   │   │               │   │
+│   │   │               │   └── service/
+│   │   │               │       └── UserService.java
+│   │   │
+│   │   │               ├── auth/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── AuthController.java
+│   │   │               │   │
+│   │   │               │   ├── dto/
+│   │   │               │   │   ├── LoginRequestDTO.java
+│   │   │               │   │   ├── LoginResponseDTO.java
+│   │   │               │   │   └── RegisterRequestDTO.java
+│   │   │               │   │
+│   │   │               │   └── service/
+│   │   │               │       └── AuthService.java
+│   │   │
+│   │   │               ├── post/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── PostController.java
+│   │   │               │   │
+│   │   │               │   ├── dto/
+│   │   │               │   │   ├── PostRequestDTO.java
+│   │   │               │   │   └── PostResponseDTO.java
+│   │   │               │   │
+│   │   │               │   ├── entity/
+│   │   │               │   │   └── Post.java
+│   │   │               │   │
+│   │   │               │   ├── repository/
+│   │   │               │   │   └── PostRepository.java
+│   │   │               │   │
+│   │   │               │   └── service/
+│   │   │               │       └── PostService.java
+│   │   │
+│   │   │               ├── comment/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── CommentController.java
+│   │   │               │   ├── dto/
+│   │   │               │   │   ├── CommentRequestDTO.java
+│   │   │               │   │   └── CommentResponseDTO.java
+│   │   │               │   ├── entity/
+│   │   │               │   │   └── Comment.java
+│   │   │               │   ├── repository/
+│   │   │               │   │   └── CommentRepository.java
+│   │   │               │   └── service/
+│   │   │               │       └── CommentService.java
+│   │   │
+│   │   │               ├── like/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── LikeController.java
+│   │   │               │   ├── entity/
+│   │   │               │   │   └── Like.java
+│   │   │               │   ├── repository/
+│   │   │               │   │   └── LikeRepository.java
+│   │   │               │   └── service/
+│   │   │               │       └── LikeService.java
+│   │   │
+│   │   │               ├── follow/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── FollowController.java
+│   │   │               │   ├── entity/
+│   │   │               │   │   └── Follow.java
+│   │   │               │   ├── repository/
+│   │   │               │   │   └── FollowRepository.java
+│   │   │               │   └── service/
+│   │   │               │       └── FollowService.java
+│   │   │
+│   │   │               ├── feed/
+│   │   │               │   ├── controller/
+│   │   │               │   │   └── FeedController.java
+│   │   │               │   └── service/
+│   │   │               │       └── FeedService.java
+│   │   │
+│   │   │               ├── security/
+│   │   │               │   ├── config/
+│   │   │               │   │   └── SecurityConfig.java
+│   │   │               │   │
+│   │   │               │   ├── filter/
+│   │   │               │   │   └── JwtAuthenticationFilter.java
+│   │   │               │   │
+│   │   │               │   └── service/
+│   │   │               │       └── JwtService.java
+│   │   │
+│   │   │               └── common/
+│   │   │                   ├── exception/
+│   │   │                   │   ├── ApiErrorResponse.java
+│   │   │                   │   ├── GlobalExceptionHandler.java
+│   │   │                   │   ├── ResourceAlreadyExistsException.java
+│   │   │                   │   └── ResourceNotFoundException.java
+│   │   │                   │
+│   │   │                   └── response/
+│   │   │                       └── ApiResponse.java
+│   │   │
+│   │   └── resources/
+│   │       └── application.properties
+│   │
+│   └── test/
+│       └── java/
+│
+└── README.md
