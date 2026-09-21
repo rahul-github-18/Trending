@@ -17,9 +17,6 @@ public class CorsConfig {
                         .allowedOriginPatterns(
                                 "http://localhost:5173",
                                 "https://*.vercel.app",
-                                "https://*.ngrok-free.dev",
-                                "https://*.ngrok-free.app",
-                                "https://*.ngrok.io",
                                 "*"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
