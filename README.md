@@ -1,4 +1,4 @@
-# Trending (formerly Igniter)
+# Trending
 
 A modern, full-stack microblogging social media application built with a **React 19 + TypeScript** frontend and a **Spring Boot** backend with PostgreSQL.
 
