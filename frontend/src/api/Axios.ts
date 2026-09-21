@@ -7,8 +7,10 @@ const isLocalhost =
   (window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1");
 
+const envBaseUrl = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: isLocalhost ? "http://localhost:8080" : "",
+  baseURL: envBaseUrl ? envBaseUrl : (isLocalhost ? "http://localhost:8080" : ""),
 });
 
 api.interceptors.request.use((config) => {
