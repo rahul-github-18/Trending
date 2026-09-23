@@ -363,9 +363,37 @@ body {
 }
 
 .profile-avatar-preview {
+  position: relative;
   width: 56px;
   height: 56px;
   font-size: 20px;
+}
+
+.profile-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload-spinner {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border-radius: 50%;
+}
+
+.photo-upload-error {
+  font-size: 13px;
+  color: #e53e3e;
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 4px;
 }
 
 /* =========================

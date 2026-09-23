@@ -14,14 +14,30 @@ export interface UpdateUserRequest {
   bio: string;
 }
 
+const isLocalhost =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1");
+
+const envBaseUrl = import.meta.env.VITE_API_URL;
+const backendOrigin = envBaseUrl
+  ? envBaseUrl.replace(/\/$/, "")
+  : (isLocalhost ? "http://localhost:8080" : "");
+
 export const normalizeUser = (user: User): User => {
   if (!user) return user;
   let pic = user.profilePicture;
   if (pic && typeof pic === "string") {
-    if (pic.startsWith("http://localhost:8080/")) {
-      pic = pic.replace("http://localhost:8080/", "/");
-    } else if (!pic.startsWith("/") && !pic.startsWith("http")) {
-      pic = `/${pic}`;
+    if (
+      pic.startsWith("http://") ||
+      pic.startsWith("https://") ||
+      pic.startsWith("data:") ||
+      pic.startsWith("blob:")
+    ) {
+      // Already an absolute URL (e.g. S3 bucket, Cloudinary) or base64 / blob preview
+    } else {
+      const cleanPath = pic.startsWith("/") ? pic : `/${pic}`;
+      pic = backendOrigin ? `${backendOrigin}${cleanPath}` : cleanPath;
     }
   }
   return {

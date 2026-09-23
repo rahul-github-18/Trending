@@ -77,6 +77,12 @@ export default function Profile() {
   const [bio, setBio] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
+  // Photo upload states
+  const [previewPhotoUrl, setPreviewPhotoUrl] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
@@ -550,11 +556,34 @@ export default function Profile() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      setPhotoError("Please select an image file (PNG, JPG, WebP, etc.).");
+      return;
+    }
+
+    // Immediately display preview in UI
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewPhotoUrl(objectUrl);
+    setPhotoError(null);
+    setUploadingPhoto(true);
+
     try {
       const updatedUser = await uploadProfilePicture(file);
       setUser(updatedUser);
-    } catch (error) {
+      setPreviewPhotoUrl(null);
+      URL.revokeObjectURL(objectUrl);
+    } catch (error: any) {
       console.error("Failed to upload profile picture:", error);
+      setPhotoError(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to upload photo. Please check your connection and try again."
+      );
+    } finally {
+      setUploadingPhoto(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -563,6 +592,8 @@ export default function Profile() {
     setUsername(user.username);
     setEmail(user.email);
     setBio(user.bio || "");
+    setPreviewPhotoUrl(null);
+    setPhotoError(null);
     setIsEditing(false);
   };
 
@@ -626,8 +657,11 @@ export default function Profile() {
 
           <div className="profile-avatar-wrapper">
             <div className="profile-avatar-large">
-              {user.profilePicture ? (
-                <img src={user.profilePicture} alt={user.username} />
+              {previewPhotoUrl || user.profilePicture ? (
+                <img
+                  src={previewPhotoUrl || user.profilePicture!}
+                  alt={user.username}
+                />
               ) : (
                 <span>{user.username.charAt(0).toUpperCase()}</span>
               )}
@@ -674,24 +708,53 @@ export default function Profile() {
           <form className="edit-profile-form" onSubmit={handleUpdate}>
             <div className="edit-photo-row">
               <div className="profile-avatar-preview">
-                {user.profilePicture ? (
-                  <img src={user.profilePicture} alt={user.username} />
+                {previewPhotoUrl || user.profilePicture ? (
+                  <img
+                    src={previewPhotoUrl || user.profilePicture!}
+                    alt={user.username}
+                  />
                 ) : (
                   <span>{user.username.charAt(0).toUpperCase()}</span>
                 )}
+                {uploadingPhoto && (
+                  <div className="avatar-upload-spinner">
+                    <Loader2 size={18} className="spin-icon" />
+                  </div>
+                )}
               </div>
-              <label htmlFor="profile-picture" className="change-photo-btn">
-                <Camera size={15} />
-                <span>Change photo</span>
-              </label>
+              <button
+                type="button"
+                className="change-photo-btn"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingPhoto}
+              >
+                {uploadingPhoto ? (
+                  <>
+                    <Loader2 size={15} className="spin-icon" />
+                    <span>Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera size={15} />
+                    <span>Change photo</span>
+                  </>
+                )}
+              </button>
               <input
+                ref={fileInputRef}
                 id="profile-picture"
                 type="file"
                 accept="image/*"
                 onChange={handleProfilePictureChange}
-                hidden
+                style={{ display: "none" }}
               />
             </div>
+
+            {photoError && (
+              <div className="photo-upload-error">
+                {photoError}
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="username">Username</label>
