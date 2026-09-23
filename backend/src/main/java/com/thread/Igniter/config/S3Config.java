@@ -14,6 +14,7 @@ import java.net.URI;
 @Configuration
 public class S3Config {
 
+<<<<<<< HEAD
     @Value("${AWS_ENDPOINT_URL_S3}")
     private String endpointUrl;
 
@@ -24,6 +25,18 @@ public class S3Config {
     private String secretKey;
 
     @Value("${AWS_REGION}")
+=======
+    @Value("${aws.s3.endpoint}")
+    private String endpointUrl;
+
+    @Value("${aws.s3.access-key}")
+    private String accessKey;
+
+    @Value("${aws.s3.secret-key}")
+    private String secretKey;
+
+    @Value("${aws.s3.region}")
+>>>>>>> cb1a20e (feat(backend): integrate Neon S3 object storage for profile picture uploads)
     private String region;
 
     @Bean

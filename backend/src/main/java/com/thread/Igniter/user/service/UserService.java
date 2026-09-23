@@ -1,6 +1,7 @@
 package com.thread.Igniter.user.service;
 
 import com.thread.Igniter.common.exception.ResourceAlreadyExistsException;
+import com.thread.Igniter.common.service.S3Service;
 import com.thread.Igniter.user.dto.UserRequestDTO;
 import com.thread.Igniter.user.dto.UserResponseDTO;
 import com.thread.Igniter.user.dto.UserUpdateDTO;
@@ -24,6 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     private final Path profilePictureDirectory =
             Paths.get("uploads/profile");
@@ -113,56 +115,28 @@ public class UserService {
             );
         }
 
-        // Create directory if it doesn't exist
-        Files.createDirectories(profilePictureDirectory);
+        // Upload to Neon S3
+        String s3Url = s3Service.uploadProfilePicture(file);
 
-        // Get file extension
-        String extension = "";
-
-        if (file.getOriginalFilename() != null) {
-
-            String originalName = file.getOriginalFilename();
-
-            int index = originalName.lastIndexOf(".");
-
-            if (index != -1) {
-                extension = originalName.substring(index);
+        // Delete old profile picture if exists
+        if (oldProfilePicture != null) {
+            if (oldProfilePicture.startsWith("http://") || oldProfilePicture.startsWith("https://")) {
+                s3Service.deleteFileByUrl(oldProfilePicture);
+            } else {
+                try {
+                    Files.deleteIfExists(Paths.get(oldProfilePicture));
+                } catch (Exception ignored) {
+                }
             }
         }
 
-        // Generate unique filename
-        String fileName =
-                UUID.randomUUID() + extension;
+        // Update database with S3 picture URL
+        user.setProfilePicture(s3Url);
 
-        // Create complete file path
-        Path filePath =
-                profilePictureDirectory.resolve(fileName);
-
-        // Save new profile picture
-        Files.copy(
-                file.getInputStream(),
-                filePath
-        );
-
-        // Delete old profile picture
-        if (oldProfilePicture != null) {
-            Files.deleteIfExists(
-                    Paths.get(oldProfilePicture)
-            );
-        }
-
-        // Update database with new picture path
-        user.setProfilePicture(
-                filePath.toString()
-        );
-
-        User savedUser =
-                userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         // Build response
-        UserResponseDTO response =
-                new UserResponseDTO();
-
+        UserResponseDTO response = new UserResponseDTO();
         response.setId(savedUser.getId());
         response.setUsername(savedUser.getUsername());
         response.setEmail(savedUser.getEmail());
@@ -181,6 +155,10 @@ public class UserService {
 
         if (profilePicture == null) {
             return null;
+        }
+
+        if (profilePicture.startsWith("http://") || profilePicture.startsWith("https://") || profilePicture.startsWith("data:")) {
+            return profilePicture;
         }
 
         String normalized = profilePicture.replace("\\", "/");

@@ -5,6 +5,7 @@ import com.thread.Igniter.auth.dto.LoginResponseDTO;
 import com.thread.Igniter.auth.service.AuthService;
 import com.thread.Igniter.common.exception.ResourceNotFoundException;
 import com.thread.Igniter.security.service.JwtService;
+import com.thread.Igniter.security.service.RedisTokenService;
 import com.thread.Igniter.user.entity.User;
 import com.thread.Igniter.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +34,9 @@ class AuthServiceUnitTest {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private RedisTokenService redisTokenService;
 
     @InjectMocks
     private AuthService authService;
@@ -90,7 +95,14 @@ class AuthServiceUnitTest {
     @DisplayName("Should revoke token and clear context on logout")
     void testLogout() {
         String token = "sample-token-to-revoke";
+        Date exp = new Date(System.currentTimeMillis() + 10000);
+        when(jwtService.extractJti(token)).thenReturn("mock-jti");
+        when(jwtService.extractExpiration(token)).thenReturn(exp);
+
         authService.logout(token);
-        verify(jwtService).revokeToken(token);
+
+        verify(jwtService).extractJti(token);
+        verify(jwtService).extractExpiration(token);
+        verify(redisTokenService).revokeToken("mock-jti", exp);
     }
 }

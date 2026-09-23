@@ -1,6 +1,7 @@
 package com.thread.Igniter.testing.unit;
 
 import com.thread.Igniter.common.exception.ResourceAlreadyExistsException;
+import com.thread.Igniter.common.service.S3Service;
 import com.thread.Igniter.user.dto.UserRequestDTO;
 import com.thread.Igniter.user.dto.UserResponseDTO;
 import com.thread.Igniter.user.dto.UserUpdateDTO;
@@ -34,6 +35,9 @@ class UserServiceUnitTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private S3Service s3Service;
 
     @InjectMocks
     private UserService userService;
@@ -186,11 +190,13 @@ class UserServiceUnitTest {
     void testUploadProfilePictureSuccess() throws IOException {
         MockMultipartFile imageFile = new MockMultipartFile("file", "avatar.png", "image/png", "fake-image-bytes".getBytes());
         when(userRepository.findByUsername("alice")).thenReturn(Optional.of(sampleUser));
+        when(s3Service.uploadProfilePicture(any())).thenReturn("https://endpoint/profile-picture/profiles/avatar.png");
         when(userRepository.save(any(User.class))).thenReturn(sampleUser);
 
         UserResponseDTO response = userService.uploadProfilePicture("alice", imageFile);
 
         assertNotNull(response);
+        verify(s3Service).uploadProfilePicture(imageFile);
         verify(userRepository).save(sampleUser);
     }
 }
