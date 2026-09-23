@@ -1,4 +1,5 @@
 import api from "./Axios";
+import { clearAuthAndRedirect } from "../utils/auth";
 
 export interface LoginRequest {
   username: string;
@@ -26,7 +27,6 @@ export const logout = async (): Promise<void> => {
   } catch (error) {
     console.error("Logout request error:", error);
   } finally {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    clearAuthAndRedirect();
   }
 };

@@ -10,25 +10,61 @@ import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
 
 import Sidebar from "./components/Sidebar";
+import {
+  getValidToken,
+  getTokenRemainingTime,
+  clearAuthAndRedirect,
+} from "./utils/auth";
 
 function App() {
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem("token")
-  );
+  const [token, setToken] = useState<string | null>(() => getValidToken());
 
   useEffect(() => {
     const handleAuthTokenChanged = () => {
-      setToken(localStorage.getItem("token"));
+      setToken(getValidToken());
     };
 
     window.addEventListener("auth-token-changed", handleAuthTokenChanged);
     window.addEventListener("storage", handleAuthTokenChanged);
 
+    // Also check token validity when tab becomes active / focused again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const valid = getValidToken();
+        if (!valid && localStorage.getItem("token")) {
+          clearAuthAndRedirect();
+        } else {
+          setToken(valid);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleVisibilityChange);
+
     return () => {
       window.removeEventListener("auth-token-changed", handleAuthTokenChanged);
       window.removeEventListener("storage", handleAuthTokenChanged);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleVisibilityChange);
     };
   }, []);
+
+  // Automatic logout timer when token expires
+  useEffect(() => {
+    if (!token) return;
+
+    const remainingTime = getTokenRemainingTime(token);
+    if (remainingTime <= 0) {
+      clearAuthAndRedirect();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      clearAuthAndRedirect();
+    }, remainingTime);
+
+    return () => clearTimeout(timer);
+  }, [token]);
 
   const handleLoginSuccess = (newToken: string) => {
     localStorage.setItem("token", newToken);
