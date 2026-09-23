@@ -22,7 +22,13 @@ services:
       - "5050:80"
     depends_on:
       - postgres
-    
+
+  redis:
+    image: redis:7
+    container_name: igniter-redis
+    ports:
+      - "6379:6379"
+
   backend:
     image: igniter-backend:latest
     container_name: igniter-backend
@@ -32,8 +38,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thread_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     depends_on:
       - postgres
+      - redis
 
 volumes:
   postgres_data:
